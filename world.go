@@ -105,7 +105,3 @@ func (w *World) RemoveEntity(target Entity) {
 	w.entities[len(w.entities)-1] = nil
 	w.entities = w.entities[:len(w.entities)-1]
 }
-
-func NewWorld() *World {
-	return &World{}
-}
