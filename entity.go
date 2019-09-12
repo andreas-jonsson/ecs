@@ -1,18 +1,21 @@
+// Copyright (c) 2016 Ali Najafizadeh
+// Copyright (c) 2019 Andreas T Jonsson
+
 package ecs
 
-type entity32 struct {
+type entity struct {
 	components     []Component
 	componentTypes uint32
 }
 
-func (e *entity32) indexOfComponent(componentTyp uint32) int {
+func (e *entity) indexOfComponent(componentTyp uint32) int {
 	//position value is 1, 2, 3, ...
 	//in order to conver it into index, we need to decrement it by one
 	position := calcBitIndex(e.componentTypes, componentTyp)
 	return int(position - 1)
 }
 
-func (e *entity32) Component(componentType uint32) Component {
+func (e *entity) Component(componentType uint32) Component {
 	//make sure the component exists in list
 	if e.componentTypes&componentType == 0 {
 		return nil
@@ -23,7 +26,7 @@ func (e *entity32) Component(componentType uint32) Component {
 	return e.components[index]
 }
 
-func (e *entity32) AddComponent(component Component) {
+func (e *entity) AddComponent(component Component) {
 	//make sure that component always passes as non nil value
 	if component == nil {
 		return
@@ -31,7 +34,7 @@ func (e *entity32) AddComponent(component Component) {
 
 	componentType := component.ComponentType()
 
-	//component already inside this entity32
+	//component already inside this entity
 	if e.componentTypes&componentType != 0 {
 		return
 	}
@@ -46,7 +49,7 @@ func (e *entity32) AddComponent(component Component) {
 	e.components[index] = component
 }
 
-func (e *entity32) RemoveComponent(componentType uint32) {
+func (e *entity) RemoveComponent(componentType uint32) {
 	//component doesn't have that component
 	if e.componentTypes&componentType == 0 {
 		return
@@ -60,10 +63,10 @@ func (e *entity32) RemoveComponent(componentType uint32) {
 	e.components = e.components[:len(e.components)-1]
 }
 
-func (e *entity32) HasComponentTypes(componentTypes uint32) bool {
+func (e *entity) HasComponentTypes(componentTypes uint32) bool {
 	return e.componentTypes&componentTypes != 0
 }
 
-func NewEntity32() Entity {
-	return &entity32{}
+func NewEntity() *entity {
+	return &entity{}
 }

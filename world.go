@@ -1,4 +1,11 @@
+// Copyright (c) 2016 Ali Najafizadeh
+// Copyright (c) 2019 Andreas T Jonsson
+
 package ecs
+
+import (
+	"time"
+)
 
 type world struct {
 	systemTypes uint32
@@ -48,7 +55,7 @@ func (w *world) RemoveSystem(systemType uint32) {
 	w.systems = w.systems[:len(w.systems)-1]
 }
 
-func (w *world) Update(delta float32) {
+func (w *world) Update(delta time.Duration) {
 	for _, system := range w.systems {
 		if system.Active() {
 			system.Update(delta, w)
@@ -94,6 +101,6 @@ func (w *world) RemoveEntity(target Entity) {
 	w.entities = w.entities[:len(w.entities)-1]
 }
 
-func NewWorld() World {
+func NewWorld() *world {
 	return &world{}
 }

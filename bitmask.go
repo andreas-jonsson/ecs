@@ -1,14 +1,13 @@
+// Copyright (c) 2016 Ali Najafizadeh
+// Copyright (c) 2019 Andreas T Jonsson
+
 package ecs
 
-// bitCounter this is very fast func to counts the number of 1 bits in uint32
-// instead of doing o(32) we are doing only o(12)
-func bitCounter(val uint32) uint32 {
-	var count uint32
-	count = val - ((val >> 1) & 033333333333) - ((val >> 2) & 011111111111)
-	return ((count + (count >> 3)) & 030707070707) % 63
-}
+import (
+	"math/bits"
+)
 
-// calcPosition simply counts the number of ones from right to left.
+// calcBitIndex simply counts the number of ones from right to left.
 // as an example, `combined` is `uint32` number which being AND with mask.
 // mask is a uint32 power of 2 number which tries to count the number of
 // one bits in combined varibale.
@@ -34,5 +33,5 @@ func calcBitIndex(all, target uint32) uint32 {
 	targetAllRightBits = 2*target - 1
 	targetAllRightBits &= all
 
-	return bitCounter(targetAllRightBits)
+	return uint32(bits.OnesCount32(targetAllRightBits))
 }

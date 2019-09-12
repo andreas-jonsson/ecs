@@ -1,4 +1,11 @@
+// Copyright (c) 2016 Ali Najafizadeh
+// Copyright (c) 2019 Andreas T Jonsson
+
 package ecs
+
+import (
+	"time"
+)
 
 // Component represents the abstract version of data.
 // each component will associate with a meaningful data.
@@ -41,7 +48,7 @@ type System interface {
 	Pause()
 	Resume()
 	End()
-	Update(delta float32, query Query)
+	Update(delta time.Duration, query Query)
 }
 
 // World is a simple abstraction of minimum requirement of
@@ -49,5 +56,5 @@ type System interface {
 type World interface {
 	AddSystem(system System)
 	RemoveSystem(systemType uint32)
-	Update(delta float32)
+	Update(delta time.Duration)
 }
