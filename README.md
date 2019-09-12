@@ -1,4 +1,4 @@
-# ecs
+# ECS
 
 Entity Component System in Go
 
