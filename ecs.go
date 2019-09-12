@@ -44,16 +44,12 @@ type Query interface {
 type System interface {
 	SystemType() uint32
 	Active() bool
-	Start()
-	Pause()
-	Resume()
-	End()
 	Update(delta time.Duration, query Query)
 }
 
-// World is a simple abstraction of minimum requirement of
+// Manager is a simple abstraction of minimum requirement of
 // method which needed for any game.
-type World interface {
+type Manager interface {
 	AddSystem(system System)
 	RemoveSystem(systemType uint32)
 	Update(delta time.Duration)

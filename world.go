@@ -7,18 +7,18 @@ import (
 	"time"
 )
 
-type world struct {
+type World struct {
 	systemTypes uint32
 	systems     []System
 	entities    []Entity
 }
 
-func (w *world) indexOfSystem(systemType uint32) int {
+func (w *World) indexOfSystem(systemType uint32) int {
 	position := calcBitIndex(w.systemTypes, systemType)
 	return int(position - 1)
 }
 
-func (w *world) AddSystem(system System) {
+func (w *World) AddSystem(system System) {
 	//make sure that system always passes as non nil value
 	if system == nil {
 		return
@@ -41,7 +41,7 @@ func (w *world) AddSystem(system System) {
 	w.systems[index] = system
 }
 
-func (w *world) RemoveSystem(systemType uint32) {
+func (w *World) RemoveSystem(systemType uint32) {
 	//system doesn't have that system
 	if w.systemTypes&systemType == 0 {
 		return
@@ -55,7 +55,7 @@ func (w *world) RemoveSystem(systemType uint32) {
 	w.systems = w.systems[:len(w.systems)-1]
 }
 
-func (w *world) Update(delta time.Duration) {
+func (w *World) Update(delta time.Duration) {
 	for _, system := range w.systems {
 		if system.Active() {
 			system.Update(delta, w)
@@ -63,7 +63,7 @@ func (w *world) Update(delta time.Duration) {
 	}
 }
 
-func (w *world) Entities(componentTypes uint32) []Entity {
+func (w *World) Entities(componentTypes uint32) []Entity {
 	var entities []Entity
 
 	for _, entity := range w.entities {
@@ -75,15 +75,20 @@ func (w *world) Entities(componentTypes uint32) []Entity {
 	return entities
 }
 
-func (w *world) System(systemType uint32) System {
-	return nil
+func (w *World) System(systemType uint32) System {
+	if w.systemTypes&systemType == 0 {
+		return nil
+	}
+
+	index := w.indexOfSystem(systemType)
+	return w.systems[index]
 }
 
-func (w *world) AddEntity(entity Entity) {
+func (w *World) AddEntity(entity Entity) {
 	w.entities = append(w.entities, entity)
 }
 
-func (w *world) RemoveEntity(target Entity) {
+func (w *World) RemoveEntity(target Entity) {
 	index := -1
 	for i, entity := range w.entities {
 		if entity == target {
@@ -101,6 +106,6 @@ func (w *world) RemoveEntity(target Entity) {
 	w.entities = w.entities[:len(w.entities)-1]
 }
 
-func NewWorld() *world {
-	return &world{}
+func NewWorld() *World {
+	return &World{}
 }
