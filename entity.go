@@ -44,8 +44,8 @@ func (e *entity) AddComponent(component Component) {
 	index := e.indexOfComponent(componentType)
 
 	//insert the new component into right index
-	e.components = e.components[0 : len(e.components)+1]
-	copy(e.components[index:], e.components[index+1:])
+	e.components = append(e.components, nil)
+	copy(e.components[index+1:], e.components[index:])
 	e.components[index] = component
 }
 
@@ -59,7 +59,6 @@ func (e *entity) RemoveComponent(componentType uint32) {
 
 	//deleting the component from list
 	copy(e.components[index:], e.components[index+1:])
-	e.components[len(e.components)-1] = nil
 	e.components = e.components[:len(e.components)-1]
 }
 

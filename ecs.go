@@ -43,7 +43,7 @@ type Query interface {
 // for manipulating entities.
 type System interface {
 	SystemType() uint32
-	Active() bool
+	Active(stage int) bool
 	Update(delta time.Duration, query Query)
 }
 
@@ -52,5 +52,5 @@ type System interface {
 type Manager interface {
 	AddSystem(system System)
 	RemoveSystem(systemType uint32)
-	Update(delta time.Duration)
+	Update(stage int, delta time.Duration)
 }

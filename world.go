@@ -36,8 +36,8 @@ func (w *World) AddSystem(system System) {
 	index := w.indexOfSystem(systemType)
 
 	//insert the new system into right index
-	w.systems = w.systems[0 : len(w.systems)+1]
-	copy(w.systems[index:], w.systems[index+1:])
+	w.systems = append(w.systems, nil)
+	copy(w.systems[index+1:], w.systems[index:])
 	w.systems[index] = system
 }
 
@@ -51,13 +51,12 @@ func (w *World) RemoveSystem(systemType uint32) {
 
 	//deleting the system from list
 	copy(w.systems[index:], w.systems[index+1:])
-	w.systems[len(w.systems)-1] = nil
 	w.systems = w.systems[:len(w.systems)-1]
 }
 
-func (w *World) Update(delta time.Duration) {
+func (w *World) Update(stage int, delta time.Duration) {
 	for _, system := range w.systems {
-		if system.Active() {
+		if system.Active(stage) {
 			system.Update(delta, w)
 		}
 	}
@@ -97,11 +96,8 @@ func (w *World) RemoveEntity(target Entity) {
 		}
 	}
 
-	if index == -1 {
-		return
+	if index > -1 {
+		copy(w.entities[index:], w.entities[index+1:])
+		w.entities = w.entities[:len(w.entities)-1]
 	}
-
-	copy(w.entities[index:], w.entities[index+1:])
-	w.entities[len(w.entities)-1] = nil
-	w.entities = w.entities[:len(w.entities)-1]
 }
