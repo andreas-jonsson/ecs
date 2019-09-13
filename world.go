@@ -8,10 +8,9 @@ import (
 )
 
 type World struct {
-	systemTypes  uint32
-	systems      []System
-	entities     []Entity
-	entityLookup map[uint64]Entity
+	systemTypes uint32
+	systems     []System
+	entities    []Entity
 }
 
 func (w *World) indexOfSystem(systemType uint32) int {
@@ -78,7 +77,7 @@ func (w *World) Entities(componentTypes uint32) []Entity {
 func (w *World) EntitiesByID(ids ...uint64) []Entity {
 	var entities []Entity
 	for _, id := range ids {
-		if entity, ok := w.entityLookup[id]; ok {
+		if entity, ok := entityLookup[id]; ok {
 			entities = append(entities, entity)
 		}
 	}
@@ -106,7 +105,7 @@ func (w *World) System(systemType uint32) System {
 
 func (w *World) AddEntity(entity Entity) {
 	w.entities = append(w.entities, entity)
-	w.entityLookup[entity.ID()] = entity
+	entityLookup[entity.ID()] = entity
 }
 
 func (w *World) RemoveEntity(target Entity) Entity {
@@ -114,7 +113,7 @@ func (w *World) RemoveEntity(target Entity) Entity {
 		if entity == target {
 			copy(w.entities[index:], w.entities[index+1:])
 			w.entities = w.entities[:len(w.entities)-1]
-			delete(w.entityLookup, entity.ID())
+			delete(entityLookup, entity.ID())
 			return entity
 		}
 	}
@@ -126,7 +125,7 @@ func (w *World) RemoveEntityByID(id uint64) Entity {
 		if entity.ID() == id {
 			copy(w.entities[index:], w.entities[index+1:])
 			w.entities = w.entities[:len(w.entities)-1]
-			delete(w.entityLookup, id)
+			delete(entityLookup, id)
 			return entity
 		}
 	}

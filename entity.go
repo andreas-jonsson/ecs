@@ -81,7 +81,10 @@ func (e *entity) HasComponentTypes(componentTypes uint32) bool {
 	return e.componentTypes&componentTypes != 0
 }
 
-var idCounter uint64
+var (
+	idCounter    uint64
+	entityLookup = map[uint64]Entity{}
+)
 
 func NewEntity() *entity {
 	if idCounter == math.MaxUint64 {
