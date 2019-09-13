@@ -3,8 +3,13 @@
 
 package ecs
 
+import (
+	"math"
+)
+
 type entity struct {
 	components     []Component
+	id             uint64
 	componentTypes uint32
 }
 
@@ -13,6 +18,10 @@ func (e *entity) indexOfComponent(componentTyp uint32) int {
 	//in order to conver it into index, we need to decrement it by one
 	position := calcBitIndex(e.componentTypes, componentTyp)
 	return int(position - 1)
+}
+
+func (e *entity) ID() uint64 {
+	return e.id
 }
 
 func (e *entity) Component(componentType uint32) Component {
@@ -24,6 +33,10 @@ func (e *entity) Component(componentType uint32) Component {
 	index := e.indexOfComponent(componentType)
 
 	return e.components[index]
+}
+
+func (e *entity) Components() []Component {
+	return e.components
 }
 
 func (e *entity) AddComponent(component Component) {
@@ -68,6 +81,12 @@ func (e *entity) HasComponentTypes(componentTypes uint32) bool {
 	return e.componentTypes&componentTypes != 0
 }
 
+var idCounter uint64
+
 func NewEntity() *entity {
-	return &entity{}
+	if idCounter == math.MaxUint64 {
+		panic("id space exhausted")
+	}
+	idCounter++
+	return &entity{id: idCounter}
 }

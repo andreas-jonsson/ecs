@@ -38,7 +38,9 @@ type Component interface {
 // components can be added or removed from entity either at
 // runtime or compile time.
 type Entity interface {
+	ID() uint64
 	Component(typ uint32) Component
+	Components() []Component
 	AddComponent(component Component)
 	RemoveComponent(componentType uint32) Component
 	HasComponentTypes(componentTypes uint32) bool
@@ -51,8 +53,10 @@ type Entity interface {
 type Query interface {
 	Entities(componentTypes uint32) []Entity
 	ForAllEntities(componentTypes uint32, f func(e Entity) bool)
+	EntitiesByID(ids ...uint64) []Entity
 	AddEntity(Entity)
-	RemoveEntity(Entity)
+	RemoveEntity(Entity) Entity
+	RemoveEntityByID(id uint64) Entity
 	System(systemType uint32) System
 }
 
