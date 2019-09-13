@@ -41,17 +41,19 @@ func (w *World) AddSystem(system System) {
 	w.systems[index] = system
 }
 
-func (w *World) RemoveSystem(systemType uint32) {
+func (w *World) RemoveSystem(systemType uint32) System {
 	//system doesn't have that system
 	if w.systemTypes&systemType == 0 {
-		return
+		return nil
 	}
 
 	index := w.indexOfSystem(systemType)
+	sys := w.systems[index]
 
 	//deleting the system from list
 	copy(w.systems[index:], w.systems[index+1:])
 	w.systems = w.systems[:len(w.systems)-1]
+	return sys
 }
 
 func (w *World) Update(stage int, delta time.Duration) {
@@ -74,6 +76,16 @@ func (w *World) Entities(componentTypes uint32) []Entity {
 	return entities
 }
 
+func (w *World) ForAllEntities(componentTypes uint32, f func(e Entity) bool) {
+	for _, entity := range w.entities {
+		if entity.HasComponentTypes(componentTypes) {
+			if !f(entity) {
+				return
+			}
+		}
+	}
+}
+
 func (w *World) System(systemType uint32) System {
 	if w.systemTypes&systemType == 0 {
 		return nil
@@ -88,16 +100,11 @@ func (w *World) AddEntity(entity Entity) {
 }
 
 func (w *World) RemoveEntity(target Entity) {
-	index := -1
-	for i, entity := range w.entities {
+	for index, entity := range w.entities {
 		if entity == target {
-			index = i
-			break
+			copy(w.entities[index:], w.entities[index+1:])
+			w.entities = w.entities[:len(w.entities)-1]
+			return
 		}
-	}
-
-	if index > -1 {
-		copy(w.entities[index:], w.entities[index+1:])
-		w.entities = w.entities[:len(w.entities)-1]
 	}
 }

@@ -49,17 +49,19 @@ func (e *entity) AddComponent(component Component) {
 	e.components[index] = component
 }
 
-func (e *entity) RemoveComponent(componentType uint32) {
+func (e *entity) RemoveComponent(componentType uint32) Component {
 	//component doesn't have that component
 	if e.componentTypes&componentType == 0 {
-		return
+		return nil
 	}
 
 	index := e.indexOfComponent(componentType)
+	c := e.components[index]
 
 	//deleting the component from list
 	copy(e.components[index:], e.components[index+1:])
 	e.components = e.components[:len(e.components)-1]
+	return c
 }
 
 func (e *entity) HasComponentTypes(componentTypes uint32) bool {

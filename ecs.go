@@ -7,6 +7,24 @@ import (
 	"time"
 )
 
+// Destructible defines a component or entity that needs cleanup.
+type Destructible interface {
+	Destroy()
+}
+
+// Destroy calls the Destroy function (if it exist) on a entity and all it's components.
+// If o is a component it will call Destroy if it exist.
+func Destroy(o interface{}) {
+	if e, ok := o.(*entity); ok {
+		for _, c := range e.components {
+			Destroy(c)
+		}
+	}
+	if d, ok := o.(Destructible); ok {
+		d.Destroy()
+	}
+}
+
 // Component represents the abstract version of data.
 // each component will associate with a meaningful data.
 // because of underneath structure, we can have upto
@@ -22,7 +40,7 @@ type Component interface {
 type Entity interface {
 	Component(typ uint32) Component
 	AddComponent(component Component)
-	RemoveComponent(componentType uint32)
+	RemoveComponent(componentType uint32) Component
 	HasComponentTypes(componentTypes uint32) bool
 }
 
@@ -32,6 +50,7 @@ type Entity interface {
 // an already exist system.
 type Query interface {
 	Entities(componentTypes uint32) []Entity
+	ForAllEntities(componentTypes uint32, f func(e Entity) bool)
 	AddEntity(Entity)
 	RemoveEntity(Entity)
 	System(systemType uint32) System
@@ -51,6 +70,6 @@ type System interface {
 // method which needed for any game.
 type Manager interface {
 	AddSystem(system System)
-	RemoveSystem(systemType uint32)
+	RemoveSystem(systemType uint32) System
 	Update(stage int, delta time.Duration)
 }
