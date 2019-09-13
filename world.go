@@ -74,6 +74,16 @@ func (w *World) Entities(componentTypes uint32) []Entity {
 	return entities
 }
 
+func (w *World) ForAllEntities(componentTypes uint32, f func(e Entity) bool) {
+	for _, entity := range w.entities {
+		if entity.HasComponentTypes(componentTypes) {
+			if !f(entity) {
+				return
+			}
+		}
+	}
+}
+
 func (w *World) EntitiesByID(ids ...uint64) []Entity {
 	var entities []Entity
 	for _, id := range ids {
@@ -84,14 +94,11 @@ func (w *World) EntitiesByID(ids ...uint64) []Entity {
 	return entities
 }
 
-func (w *World) ForAllEntities(componentTypes uint32, f func(e Entity) bool) {
-	for _, entity := range w.entities {
-		if entity.HasComponentTypes(componentTypes) {
-			if !f(entity) {
-				return
-			}
-		}
+func (w *World) EntityByID(id uint64) Entity {
+	if entity, ok := entityLookup[id]; ok {
+		return entity
 	}
+	return nil
 }
 
 func (w *World) System(systemType uint32) System {

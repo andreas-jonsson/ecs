@@ -53,6 +53,7 @@ type Entity interface {
 type Query interface {
 	Entities(componentTypes uint32) []Entity
 	ForAllEntities(componentTypes uint32, f func(e Entity) bool)
+	EntityByID(id uint64) Entity
 	EntitiesByID(ids ...uint64) []Entity
 	AddEntity(Entity)
 	RemoveEntity(Entity) Entity
